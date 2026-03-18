@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>给你</title>
+  <title>嘻嘻</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -79,15 +79,15 @@
       function heartY(t) { return -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)); }
 
       var scale = 11;
-      var scatter = 0.6;
-      var numOutline = 320;
-      var numLayers = 30;
+      var scatter = 0.25;
+      var numOutline = 200;
+      var numLayers = 16;
       var container = document.getElementById('heartDots');
       var dots = [];
 
       for (var layer = 0; layer < numLayers; layer++) {
-        var r = 1 - (layer / numLayers) * 0.98;
-        if (r < 0.02) r = 0.02;
+        var r = 1 - (layer / numLayers) * 0.96;
+        if (r < 0.04) r = 0.04;
         for (var i = 0; i < numOutline; i++) {
           var t = (i / numOutline) * 2 * Math.PI;
           var bx = heartX(t) * r * scale + (Math.random() - 0.5) * scatter;
