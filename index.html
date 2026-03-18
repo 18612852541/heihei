@@ -99,18 +99,57 @@
           trail: []
         });
       }
+      function fireRounds() {
+        spawnRocket();
+        setTimeout(function () { spawnRocket(); }, 200);
+        setTimeout(function () { spawnRocket(); }, 420);
+      }
       function explodeAt(x, y) {
-        var n = 42 + Math.floor(Math.random() * 24);
-        for (var i = 0; i < n; i++) {
-          var angle = Math.random() * Math.PI * 2;
-          var sp = 2.2 + Math.random() * 3.8;
+        var isHeart = Math.random() > 0.5;
+        var i, angle, sp, ux, uy, len, k, idx;
+        if (isHeart) {
+          var heartSample = 75;
+          for (i = 0; i < heartSample; i++) {
+            var t = (i / heartSample) * 2 * Math.PI;
+            var r = 0.3 + Math.random() * 0.65;
+            ux = heartX(t) * r * scale;
+            uy = heartY(t) * r * scale;
+            len = Math.sqrt(ux * ux + uy * uy) || 1;
+            ux /= len; uy /= len;
+            sp = 2.4 + Math.random() * 2.6;
+            particles.push({
+              x: x, y: y,
+              vx: ux * sp, vy: uy * sp,
+              life: 1, maxLife: 0.88 + Math.random() * 0.2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              size: 1.2 + Math.random() * 1.4
+            });
+          }
+        } else {
+          for (i = 0; i < 55; i++) {
+            idx = Math.floor(Math.random() * namePoints.length);
+            ux = namePoints[idx][0];
+            uy = namePoints[idx][1];
+            len = Math.sqrt(ux * ux + uy * uy) || 1;
+            k = (0.06 + Math.random() * 0.05) * (2 + Math.random());
+            particles.push({
+              x: x, y: y,
+              vx: (ux / len) * len * k * 2.8, vy: (uy / len) * len * k * 2.8,
+              life: 1, maxLife: 0.88 + Math.random() * 0.2,
+              color: colors[Math.floor(Math.random() * colors.length)],
+              size: 1.2 + Math.random() * 1.4
+            });
+          }
+        }
+        for (i = 0; i < 18; i++) {
+          angle = Math.random() * Math.PI * 2;
+          sp = 2 + Math.random() * 3.2;
           particles.push({
             x: x, y: y,
-            vx: Math.cos(angle) * sp,
-            vy: Math.sin(angle) * sp,
-            life: 1, maxLife: 0.85 + Math.random() * 0.25,
+            vx: Math.cos(angle) * sp, vy: Math.sin(angle) * sp,
+            life: 1, maxLife: 0.8 + Math.random() * 0.25,
             color: colors[Math.floor(Math.random() * colors.length)],
-            size: 1.2 + Math.random() * 1.6
+            size: 1 + Math.random() * 1.2
           });
         }
       }
@@ -125,8 +164,8 @@
         var s = 1 + breath;
         var glow = 4 + 4 * (1 + Math.sin(time * 6)) * 0.5;
 
-        if (timestamp - lastRocket > 2200) {
-          spawnRocket();
+        if (timestamp - lastRocket > 2400) {
+          fireRounds();
           lastRocket = timestamp;
         }
 
