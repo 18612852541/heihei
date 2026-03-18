@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>给你</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #0f0a1a 0%, #1a0a2e 40%, #2d1b4e 100%);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      width: 420px;
+      height: 400px;
+    }
+
+    .heart-dots {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 1px;
+    }
+
+    .dot {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: #ff6b9d;
+      box-shadow: 0 0 6px #ff6b9d;
+      left: 0;
+      top: 0;
+      animation: twinkle 2s ease-in-out infinite;
+    }
+    .dot:nth-child(4n+1) { animation-delay: 0s; }
+    .dot:nth-child(4n+2) { animation-delay: 0.3s; }
+    .dot:nth-child(4n+3) { animation-delay: 0.6s; }
+    .dot:nth-child(4n)   { animation-delay: 0.9s; }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.7; transform: scale(0.9); }
+    }
+
+    .name {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 3.2rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-shadow: 0 0 24px rgba(255, 107, 157, 0.6);
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="heart-dots" id="heartDots"></div>
+    <p class="name">妮</p>
+  </div>
+
+  <script>
+    (function () {
+      function heartX(t) { return 16 * Math.pow(Math.sin(t), 3); }
+      function heartY(t) { return -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)); }
+
+      var scale = 11;
+      var scatter = 0.6;
+      var numOutline = 320;
+      var numLayers = 30;
+      var container = document.getElementById('heartDots');
+      var dots = [];
+
+      for (var layer = 0; layer < numLayers; layer++) {
+        var r = 1 - (layer / numLayers) * 0.98;
+        if (r < 0.02) r = 0.02;
+        for (var i = 0; i < numOutline; i++) {
+          var t = (i / numOutline) * 2 * Math.PI;
+          var bx = heartX(t) * r * scale + (Math.random() - 0.5) * scatter;
+          var by = heartY(t) * r * scale + (Math.random() - 0.5) * scatter;
+
+          var dot = document.createElement('div');
+          dot.className = 'dot';
+          dot.style.left = bx + 'px';
+          dot.style.top = by + 'px';
+          container.appendChild(dot);
+          dots.push([dot, bx, by]);
+        }
+      }
+
+      var start = null;
+      function breathe(timestamp) {
+        if (!start) start = timestamp;
+        var time = (timestamp - start) * 0.01;
+        var breath = 0.06 * (1 + Math.sin(time));
+        var s = 1 + breath;
+
+        for (var j = 0; j < dots.length; j++) {
+          dots[j][0].style.left = (dots[j][1] * s) + 'px';
+          dots[j][0].style.top = (dots[j][2] * s) + 'px';
+        }
+        requestAnimationFrame(breathe);
+      }
+      requestAnimationFrame(breathe);
+    })();
+  </script>
+</body>
+</html>
