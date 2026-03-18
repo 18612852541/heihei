@@ -17,24 +17,24 @@
     #c {
       display: block;
       width: 420px;
-      height: 400px;
+      height: 560px;
       border-radius: 12px;
       box-shadow: 0 0 60px rgba(255, 107, 157, 0.15);
     }
   </style>
 </head>
 <body>
-  <canvas id="c" width="420" height="400"></canvas>
+  <canvas id="c" width="420" height="560"></canvas>
   <script>
     (function () {
       var canvas = document.getElementById('c');
       var ctx = canvas.getContext('2d');
-      var w = 420, h = 400, cx = w / 2, cy = h / 2;
+      var w = 420, h = 560, cx = w / 2, cy = h / 2;
 
       function heartX(t) { return 16 * Math.pow(Math.sin(t), 3); }
       function heartY(t) { return -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)); }
 
-      var scale = 11, scatter = 0.25, numOutline = 200, numLayers = 16;
+      var scale = 11, scatter = 0.1, numOutline = 240, numLayers = 20;
       var heartPoints = [];
       for (var layer = 0; layer < numLayers; layer++) {
         var r = 1 - (layer / numLayers) * 0.96;
@@ -79,7 +79,7 @@
       }
 
       var stars = [];
-      for (var s = 0; s < 35; s++) {
+      for (var s = 0; s < 45; s++) {
         stars.push({
           x: Math.random() * w,
           y: Math.random() * h,
@@ -95,7 +95,7 @@
         rockets.push({
           x: w * 0.25 + Math.random() * w * 0.5,
           y: h + 8,
-          vy: -2.8 - Math.random() * 0.8,
+          vy: -4.2 - Math.random() * 1.2,
           trail: []
         });
       }
@@ -135,7 +135,7 @@
           rk.y += rk.vy;
           rk.trail.push({ x: rk.x, y: rk.y });
           if (rk.trail.length > 12) rk.trail.shift();
-          if (rk.y < h * 0.55 || rk.y < 80) {
+          if (rk.y < h * 0.52 || rk.y < 100) {
             explodeAt(rk.x, rk.y);
             rockets.splice(ri, 1);
           }
@@ -202,10 +202,10 @@
         }
         ctx.globalAlpha = 1;
 
-        var vig = ctx.createRadialGradient(cx, cy, w * 0.3, cx, cy, w * 0.9);
+        var vig = ctx.createRadialGradient(cx, cy, w * 0.35, cx, cy, w * 1.1);
         vig.addColorStop(0, 'rgba(0,0,0,0)');
-        vig.addColorStop(0.6, 'rgba(0,0,0,0)');
-        vig.addColorStop(1, 'rgba(0,0,0,0.4)');
+        vig.addColorStop(0.55, 'rgba(0,0,0,0)');
+        vig.addColorStop(1, 'rgba(0,0,0,0.35)');
         ctx.fillStyle = vig;
         ctx.fillRect(0, 0, w, h);
 
