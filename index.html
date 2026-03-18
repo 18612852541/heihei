@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>嘻嘻</title>
+  <title>嘿嘿</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -48,29 +48,46 @@
     .dot:nth-child(4n+3) { animation-delay: 0.6s; }
     .dot:nth-child(4n)   { animation-delay: 0.9s; }
 
+    .name-dots {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 1px;
+      height: 1px;
+      z-index: 2;
+    }
+
+    .name-dot {
+      position: absolute;
+      width: 2.5px;
+      height: 2.5px;
+      border-radius: 50%;
+      background: #ffb3d0;
+      box-shadow: 0 0 8px #ff6b9d, 0 0 12px rgba(255, 182, 193, 0.8);
+      left: 0;
+      top: 0;
+      animation: nameTwinkle 1.6s ease-in-out infinite;
+    }
+    .name-dot:nth-child(3n+1) { animation-delay: 0s; }
+    .name-dot:nth-child(3n+2) { animation-delay: 0.25s; }
+    .name-dot:nth-child(3n)   { animation-delay: 0.5s; }
+
     @keyframes twinkle {
       0%, 100% { opacity: 1; transform: scale(1); }
       50%      { opacity: 0.7; transform: scale(0.9); }
     }
 
-    .name {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      color: rgba(255, 255, 255, 0.95);
-      font-size: 3.2rem;
-      font-weight: 300;
-      letter-spacing: 0.2em;
-      text-shadow: 0 0 24px rgba(255, 107, 157, 0.6);
-      z-index: 2;
+    @keyframes nameTwinkle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.75; transform: scale(0.92); }
     }
   </style>
 </head>
 <body>
   <div class="scene">
     <div class="heart-dots" id="heartDots"></div>
-    <p class="name">妮</p>
+    <div class="name-dots" id="nameDots"></div>
   </div>
 
   <script>
@@ -92,7 +109,6 @@
           var t = (i / numOutline) * 2 * Math.PI;
           var bx = heartX(t) * r * scale + (Math.random() - 0.5) * scatter;
           var by = heartY(t) * r * scale + (Math.random() - 0.5) * scatter;
-
           var dot = document.createElement('div');
           dot.className = 'dot';
           dot.style.left = bx + 'px';
@@ -102,13 +118,54 @@
         }
       }
 
+      // 用散点画「妮」
+      var c = document.createElement('canvas');
+      c.width = 160;
+      c.height = 160;
+      var ctx = c.getContext('2d');
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 110px "Microsoft YaHei", "PingFang SC", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('妮', 80, 82);
+      var data = ctx.getImageData(0, 0, 160, 160).data;
+      var step = 4;
+      var points = [];
+      var minX = 160, minY = 160, maxX = 0, maxY = 0;
+      for (var y = 0; y < 160; y += 1) {
+        for (var x = 0; x < 160; x += 1) {
+          var i = (y * 160 + x) * 4;
+          if (data[i + 3] > 120) {
+            if ((x + y) % step === 0) {
+              points.push([x, y]);
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+      }
+      var cx = (minX + maxX) / 2;
+      var cy = (minY + maxY) / 2;
+      var nameScale = 0.9;
+      var nameContainer = document.getElementById('nameDots');
+      for (var k = 0; k < points.length; k++) {
+        var px = (points[k][0] - cx) * nameScale;
+        var py = (points[k][1] - cy) * nameScale;
+        var nd = document.createElement('div');
+        nd.className = 'name-dot';
+        nd.style.left = px + 'px';
+        nd.style.top = py + 'px';
+        nameContainer.appendChild(nd);
+      }
+
       var start = null;
       function breathe(timestamp) {
         if (!start) start = timestamp;
         var time = (timestamp - start) * 0.01;
         var breath = 0.06 * (1 + Math.sin(time));
         var s = 1 + breath;
-
         for (var j = 0; j < dots.length; j++) {
           dots[j][0].style.left = (dots[j][1] * s) + 'px';
           dots[j][0].style.top = (dots[j][2] * s) + 'px';
